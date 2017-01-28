@@ -1,0 +1,97 @@
+terminal FUNCTION,VAR,RETURN,IF,ELSE,THIS,FOR,ID, NULL, TRUE, FALSE, NUMBER, STRING;
+terminal LPAREN,RPAREN,LBRACE,RBRACE,SEMI,COMMA;
+terminal ASS_IS,QUESTION,COLON,OP_LOR,OP_LAND, OP_BOR, OP_BXOR, OP_BAND;
+terminal DELETE, VOID, TYPEOF, OP_INC, OP_DEC, OP_ADD, OP_SUB, OP_NEG, OP_NOT, OP_MUL, OP_DIV, OP_MOD, OP_SHL, OP_SHR, OP_SHRR;
+terminal OP_LT, OP_GT, OP_LE, OP_GE, INSTANCE_OF, IN, OP_EQ, OP_NE, OP_TEQ, OP_TNE;
+
+terminal OP_ASS_MUL, OP_ASS_DIV, OP_ASS_MOD, OP_ASS_ADD, OP_ASS_SUB, OP_ASS_SHL, OP_ASS_SHR, OP_ASS_SHRR, OP_ASS_AND, OP_ASS_XOR, OP_ASS_OR;
+terminal NEW, LBRACK, RBRACK, DOT, REGULAR_EXPRESSION;
+
+terminal SWITCH, CASE, DEFAULT, DO, WHILE, WITH, CONTINUE, BREAK, THROW, TRY, CATCH, FINALLY, GET, SET, DEBUGGER;
+
+program                      ⟶ SourceElements
+                             ⟶ ;
+
+# A.1 lexical grammar
+
+Literal
+                             ⟶ NULL
+                             ⟶ REGULAR_EXPRESSION 
+                             ⟶ NUMBER 
+                             ⟶ STRING
+                             ;
+
+
+
+# A.3 expressions
+
+PrimaryExpression
+                             ⟶ THIS
+                             ⟶ ID
+                             ⟶ Literal
+                             ⟶ LPAREN Expression RPAREN ;
+
+
+
+Expression
+                             ⟶ PrimaryExpression
+                             ⟶ Expression COMMA PrimaryExpression ;
+
+
+# A.4 Statements
+
+
+Statement
+                             ⟶ ExpressionStatement
+                             ⟶ DebuggerStatement
+                              ;
+
+
+
+
+ExpressionStatement
+                             ⟶ Expression SEMI ;
+
+
+
+
+DebuggerStatement 
+                             ⟶ DEBUGGER SEMI ;
+
+
+# A.5 Functions and programs
+
+
+FunctionDeclaration
+                             ⟶ FUNCTION ID LPAREN FormalParameterList RPAREN LBRACE FunctionBody RBRACE
+                             ⟶ FUNCTION ID LPAREN                     RPAREN LBRACE FunctionBody RBRACE
+                             ;
+
+
+FormalParameterList
+                             ⟶ ID
+                             ⟶ FormalParameterList COMMA ID ;
+
+FunctionBody
+                             ⟶ SourceElements
+                             ⟶ ;
+
+
+SourceElements
+                             ⟶ SourceElement
+                             ⟶ SourceElements SourceElement;
+
+SourceElement
+                             ⟶ Statement
+                             ⟶ FunctionDeclaration;
+
+
+
+imports ｟
+｠
+
+
+type TerminalDeclarationList Statement;
+
+
+code Statement                         ｟				result = new Specification(td, pl, im, tl, cl); ｠
