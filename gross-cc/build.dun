@@ -2,8 +2,6 @@ module {
 
 	name 'gross-cc';
 	
-	klm  '[%=module.directory%]';
-	
 	dependencies {
 		module 'gross-java-runtime';
 	}
@@ -21,9 +19,6 @@ module {
 	}
 
 	package {
-	
-		echo '[%klm%]';
-	
 		jar { 
 			in { 
 				path './compiled/';
