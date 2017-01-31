@@ -1,0 +1,12 @@
+workspace {
+	name 'gross';
+	
+	ask {
+		property 'basedir';
+		question 'Enter trunk directory of gross';
+		default '.';
+	}
+	
+	modulepath '[%basedir%]';
+
+}
