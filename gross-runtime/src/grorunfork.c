@@ -68,6 +68,7 @@ static void l_dispose(GObject *object) {
 	cat_unref_ptr(priv->postponed);
 	cat_unref_ptr(priv->reverse_stack);
 	cat_unref_ptr(priv->messages);
+	cat_unref_ptr(priv->push_back);
 	G_OBJECT_CLASS(grorun_fork_parent_class)->dispose(object);
 	cat_log_detail("disposed:%p", object);
 }

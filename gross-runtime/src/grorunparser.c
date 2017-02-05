@@ -173,6 +173,7 @@ GObject *grorun_parser_do_parse(GroRunContext *context, GroRunIScanner *scanner)
 						GroRunLeftRight lr;
 						te_sym = grorun_context_create_for_pushback(context, lr, NULL, rb);
 						cat_log_error("got push_back=%O", te_sym);
+						cat_unref_ptr(rb);
 					} else {
 						te_sym = grorun_fork_next_postponed(fork);
 						if (te_sym==NULL) {
@@ -357,6 +358,7 @@ static void l_try_error_recovery(GroRunContext *context, GroRunIScanner *scanner
 							GroRunLeftRight lr;
 							te_sym = grorun_context_create_for_pushback(context, lr, NULL, rb);
 							cat_log_error("got push_back=%O", te_sym);
+							cat_unref_ptr(rb);
 						} else {
 							te_sym = grorun_fork_next_postponed(fork);
 							if (te_sym==NULL) {
