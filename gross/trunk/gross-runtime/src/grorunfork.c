@@ -184,7 +184,7 @@ void grorun_fork_push_back_token(GroRunFork *fork, const char *token_name) {
 		priv->push_back = cat_array_wo_new();
 	}
 	CatStringWo *tn = cat_string_wo_new_with(token_name);
-	cat_array_wo_append(priv->push_back, tn);
+	cat_array_wo_append(priv->push_back, (GObject *) tn);
 	cat_log_trace("pushing back:%O", tn);
 	cat_unref_ptr(tn);
 }
@@ -193,7 +193,7 @@ CatStringWo *grorun_fork_get_push_back_token(GroRunFork *fork) {
 	GroRunForkPrivate *priv = grorun_fork_get_instance_private(fork);
 	CatStringWo *result = NULL;
 	if (priv->push_back) {
-		if (!cat_array_wo_remove_first(priv->push_back, &result)) {
+		if (!cat_array_wo_remove_first(priv->push_back, (GObject **) &result)) {
 			cat_unref_ptr(priv->push_back);
 		}
 	}
@@ -219,16 +219,10 @@ void grorun_fork_add_postponed(GroRunFork *fork, GroRunIToken *token) {
 	cat_array_wo_insert(priv->postponed, (GObject *) token, 0);
 }
 
-GroRunIToken *grorun_fork_get_postponed(GroRunFork *fork) {
-	GroRunForkPrivate *priv = grorun_fork_get_instance_private(fork);
-	return priv->postponed;
-}
-
-
 GroRunIToken *grorun_fork_next_postponed(GroRunFork *fork) {
 	GroRunForkPrivate *priv = grorun_fork_get_instance_private(fork);
 	GroRunIToken *result = NULL;
-	cat_array_wo_remove_first(priv->postponed, &result);
+	cat_array_wo_remove_first(priv->postponed, (GObject **) &result);
 	return result;
 }
 

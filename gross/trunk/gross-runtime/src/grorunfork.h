@@ -86,8 +86,6 @@ gboolean grorun_fork_has_pushback(GroRunFork *fork);
 void grorun_fork_add_postponed(GroRunFork *fork, GroRunIToken *token);
 GroRunIToken *grorun_fork_next_postponed(GroRunFork *fork);
 
-GroRunIToken *grorun_fork_get_postponed(GroRunFork *fork);
-
 void grorun_fork_dump(GroRunFork *fork);
 
 G_END_DECLS

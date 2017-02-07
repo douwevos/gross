@@ -21,6 +21,7 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
 #include "groruncontext.h"
+#include "grorunisymbolprovider.h"
 #include "full/grorunfulltoken.h"
 
 #include <logging/catlogdefs.h>
@@ -225,7 +226,7 @@ GroRunIToken *grorun_context_reduce(GroRunContext *context, GroRunFork *fork, Gr
 
 GroRunIToken *grorun_context_create_for_pushback(GroRunContext *context, const GroRunLeftRight lr, GroRunLocation *location, const CatStringWo *terminal_name) {
 	GroRunContextPrivate *priv = grorun_context_get_instance_private(context);
-	GroRunSymbol *pb_sym = grorun_isymbol_provider_get_symbol_by_name(priv->state_model, terminal_name);
+	GroRunSymbol *pb_sym = grorun_isymbol_provider_get_symbol_by_name((GroRunISymbolProvider *) priv->state_model, terminal_name);
 	cat_log_debug("name=%O, pb_sym=%O", terminal_name, pb_sym);
 	GroRunIToken *result = grorun_itoken_factory_create_token(priv->token_factory, lr, pb_sym, NULL, location, NULL);
 	return result;
