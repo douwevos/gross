@@ -25,6 +25,7 @@
 G_DEFINE_INTERFACE(GroRunIToken, grorun_itoken, G_TYPE_OBJECT);
 
 static void grorun_itoken_default_init (GroRunITokenInterface *iface) {
+	iface->getState = NULL;
 }
 
 GroRunSymbol *grorun_itoken_get_symbol(GroRunIToken *self) {
@@ -41,4 +42,19 @@ GroRunLeftRight grorun_itoken_get_indexes(GroRunIToken *self) {
 
 GroRunLocation *grorun_itoken_get_location(GroRunIToken *self) {
 	return GRORUN_ITOKEN_GET_INTERFACE(self)->getLocation(self);
+}
+
+GroRunTokenState grorun_itoken_get_state(GroRunIToken *self) {
+	GroRunITokenInterface *iface = GRORUN_ITOKEN_GET_INTERFACE(self);
+	if (iface->getState) {
+		return iface->getState(self);
+	}
+	return GRORUN_STATE_OK;
+}
+
+void grorun_itoken_set_state(GroRunIToken *self, GroRunTokenState state) {
+	GroRunITokenInterface *iface = GRORUN_ITOKEN_GET_INTERFACE(self);
+	if (iface->setState) {
+		iface->setState(self, state);
+	}
 }

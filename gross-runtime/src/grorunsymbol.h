@@ -55,6 +55,8 @@ GroRunSymbol *grorun_symbol_new(gboolean is_non_terminal, const CatStringWo *nam
 
 const CatStringWo *grorun_symbol_get_name(GroRunSymbol *symbol);
 
+int grorun_symbol_get_id(GroRunSymbol *symbol);
+
 int grorun_symbol_hash(GroRunSymbol *symbol);
 
 gboolean grorun_symbol_equal(const GroRunSymbol *symbol_a, const GroRunSymbol *symbol_b);

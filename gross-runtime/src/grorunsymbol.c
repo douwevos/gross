@@ -84,10 +84,14 @@ const CatStringWo *grorun_symbol_get_name(GroRunSymbol *symbol) {
 	return priv->name;
 }
 
+int grorun_symbol_get_id(GroRunSymbol *symbol) {
+	GroRunSymbolPrivate *priv = grorun_symbol_get_instance_private(symbol);
+	return priv->id;
+}
+
 int grorun_symbol_hash(GroRunSymbol *symbol) {
 	GroRunSymbolPrivate *priv = grorun_symbol_get_instance_private(symbol);
 	return priv->id;
-
 }
 
 gboolean grorun_symbol_equal(const GroRunSymbol *symbol_a, const GroRunSymbol *symbol_b) {

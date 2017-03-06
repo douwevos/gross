@@ -42,8 +42,9 @@ typedef struct _GroRunScannerBase               GroRunScannerBase;
 typedef struct _GroRunScannerBasePrivate        GroRunScannerBasePrivate;
 typedef struct _GroRunScannerBaseClass          GroRunScannerBaseClass;
 
-#define GRORUN_ADVANCE_STRIP_LINE_BREAKS   1
-#define GRORUN_ADVANCE_STRIP_WHITE_SPACES  2
+#define GRORUN_ADVANCE_ALLOW_STAY          1
+#define GRORUN_ADVANCE_STRIP_LINE_BREAKS   2
+#define GRORUN_ADVANCE_STRIP_WHITE_SPACES  4
 
 struct _GroRunScannerBase {
 	GObject parent;
@@ -63,6 +64,8 @@ struct _GroRunScannerBaseClass {
 
 
 	void (*markLocation)(GroRunScannerBase *scanner);
+	int (*getLeftColumn)(GroRunScannerBase *scanner);
+	long long (*getLeftRow)(GroRunScannerBase *scanner);
 	int (*getColumn)(GroRunScannerBase *scanner);
 	long long (*getRow)(GroRunScannerBase *scanner);
 	int (*getMarkedColumn)(GroRunScannerBase *scanner);
