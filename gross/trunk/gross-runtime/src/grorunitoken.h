@@ -32,6 +32,16 @@
 #define GRORUN_IS_ITOKEN(obj)              (G_TYPE_CHECK_INSTANCE_TYPE((obj), GRORUN_TYPE_ITOKEN))
 #define GRORUN_ITOKEN_GET_INTERFACE(inst)  (G_TYPE_INSTANCE_GET_INTERFACE((inst), GRORUN_TYPE_ITOKEN, GroRunITokenInterface))
 
+typedef enum _GroRunTokenState GroRunTokenState;
+
+enum _GroRunTokenState {
+	GRORUN_STATE_OK,
+	GRORUN_STATE_PARSER_ERROR,
+	GRORUN_STATE_PARSER_WARNING,
+	GRORUN_STATE_SCANNER_ERROR,
+	GRORUN_STATE_SCANNER_WARNING
+};
+
 typedef struct _GroRunLeftRight            GroRunLeftRight;
 struct _GroRunLeftRight {
 	int left, right;
@@ -47,6 +57,8 @@ struct _GroRunITokenInterface {
 	GObject *(*getValue)(GroRunIToken *self);
 	GroRunLeftRight (*getIndexes)(GroRunIToken *self);
 	GroRunLocation *(*getLocation)(GroRunIToken *self);
+	GroRunTokenState (*getState)(GroRunIToken *self);
+	void (*setState)(GroRunIToken *self, GroRunTokenState state);
 };
 
 GType grorun_itoken_get_type(void);
@@ -55,5 +67,8 @@ GroRunSymbol *grorun_itoken_get_symbol(GroRunIToken *self);
 GObject *grorun_itoken_get_value(GroRunIToken *self);
 GroRunLeftRight grorun_itoken_get_indexes(GroRunIToken *self);
 GroRunLocation *grorun_itoken_get_location(GroRunIToken *self);
+GroRunTokenState grorun_itoken_get_state(GroRunIToken *self);
+void grorun_itoken_set_state(GroRunIToken *self, GroRunTokenState state);
+
 
 #endif /* GRORUNITOKEN_H_ */

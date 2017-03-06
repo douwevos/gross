@@ -24,7 +24,7 @@
 #include "../full/grorunfulltoken.h"
 
 #include <logging/catlogdefs.h>
-#define CAT_LOG_LEVEL CAT_LOG_WARN
+#define CAT_LOG_LEVEL CAT_LOG_INFO
 #define CAT_LOG_CLAZZ "GroRunScannerBase"
 #include <logging/catlog.h>
 
@@ -40,7 +40,7 @@ struct _GroRunScannerBasePrivate {
 	int lookahead_max;
 	gunichar next_char;
 	int mark_row, mark_column;
-	int row, left_column, right_column;
+	int left_row, row, left_column, right_column;
 	int index_sequence;
 };
 
@@ -66,6 +66,8 @@ static GroRunIToken *l_scan_for_quoted_string(GroRunScannerBase *scanner, int co
 static void l_markLocation(GroRunScannerBase *scanner);
 static int l_getColumn(GroRunScannerBase *scanner);
 static long long l_getRow(GroRunScannerBase *scanner);
+static int l_getLeftColumn(GroRunScannerBase *scanner);
+static long long l_getLeftRow(GroRunScannerBase *scanner);
 static int l_getMarkedColumn(GroRunScannerBase *scanner);
 static long long l_getMarkedRow(GroRunScannerBase *scanner);
 
@@ -87,6 +89,8 @@ static void grorun_scanner_base_class_init(GroRunScannerBaseClass *clazz) {
 	clazz->markLocation = l_markLocation;
 	clazz->getColumn = l_getColumn;
 	clazz->getRow = l_getRow;
+	clazz->getLeftColumn = l_getLeftColumn;
+	clazz->getLeftRow = l_getLeftRow;
 	clazz->getMarkedColumn = l_getMarkedColumn;
 	clazz->getMarkedRow = l_getMarkedRow;
 
@@ -137,6 +141,7 @@ void grorun_scanner_base_construct(GroRunScannerBase *scanner_base, GroRunIToken
 	}
 	priv->next_char = 0;
 	priv->row = 0;
+	priv->left_row = 0;
 	priv->left_column = 0;
 	priv->right_column = 0;
 	priv->mark_row = 0;
@@ -167,6 +172,7 @@ static gunichar l_advance_raw(GroRunScannerBasePrivate *priv) {
 	l_scan_one_unichar(priv);
 
 	priv->left_column = priv->right_column;
+	priv->left_row = priv->row;
 	gunichar result = priv->lookahead[0];
 	if (result==0xa) {
 		if (priv->lookahead[1]==0xd) {
@@ -198,6 +204,7 @@ static gunichar l_advance_raw(GroRunScannerBasePrivate *priv) {
 		}
 	}
 	priv->next_char = result;
+	cat_log_info("ch=%d, left=%d,%d : right=%d,%d", result, priv->left_column, priv->left_row, priv->right_column, priv->row);
 	return result;
 }
 
@@ -206,8 +213,15 @@ static gunichar l_advance(GroRunScannerBase *scanner, int advance_flags) {
 	if (advance_flags==0) {
 		return l_advance_raw(priv);
 	}
+	gboolean do_advance = (advance_flags & GRORUN_ADVANCE_ALLOW_STAY) == 0;
+	gunichar fch = 0;
 	while(TRUE) {
-		gunichar fch = l_advance_raw(priv);
+		if (do_advance) {
+			fch = l_advance_raw(priv);
+		} else {
+			fch = priv->lookahead[0];
+			do_advance = TRUE;
+		}
 		if ((fch==0xa || fch==0xd) && ((advance_flags & GRORUN_ADVANCE_STRIP_LINE_BREAKS) !=0)) {
 			continue;
 		} else if ((fch==' ' || fch=='\t') && ((advance_flags & GRORUN_ADVANCE_STRIP_WHITE_SPACES) !=0)) {
@@ -232,6 +246,9 @@ static GroRunSymbol *l_get_connected_symbol(GroRunScannerBase *scanner, int sym_
 static GroRunIToken *l_create_token(GroRunScannerBase *scanner, int conn_sym_id, long long end_row, int end_column, void *c_value) {
 	GroRunScannerBasePrivate *priv = grorun_scanner_base_get_instance_private(scanner);
 	GroRunSymbol *symbol = (GroRunSymbol *) cat_array_wo_get(priv->connected_symbols, conn_sym_id);
+	if (symbol==NULL) {
+		cat_log_error("symbol not defined for conn_sym_id:%d", conn_sym_id);
+	}
 	cat_log_debug("conn_sym_id=%d, symbol=%O", conn_sym_id, symbol);
 
 	GroRunLocation *location = grorun_location_new(priv->mark_column, priv->mark_row, end_column, end_row);
@@ -277,18 +294,20 @@ static GroRunIToken *l_scan_for_id_or_keyword(GroRunScannerBase *scanner, int co
 	}
 
 	int connSymId = conn_sym_id_for_identifier;
-	CatStringWo *keyword = NULL;
-	if (!case_sensitive) {
-		keyword = cat_string_wo_clone(buf, CAT_CLONE_DEPTH_FULL);
-		cat_string_wo_to_lowercase(keyword);
-	} else {
-		keyword = cat_ref_ptr(buf);
-	}
-	cat_log_debug("keyword='%O'", keyword);
-	CatInteger *ci = (CatInteger *) cat_hash_map_wo_get(priv->keyword_mapping, keyword);
-	cat_unref_ptr(keyword);
-	if (ci!=NULL) {
-		connSymId = cat_integer_value(ci);
+	if (priv->keyword_mapping) {
+		CatStringWo *keyword = NULL;
+		if (!case_sensitive) {
+			keyword = cat_string_wo_clone(buf, CAT_CLONE_DEPTH_FULL);
+			cat_string_wo_to_lowercase(keyword);
+		} else {
+			keyword = cat_ref_ptr(buf);
+		}
+		cat_log_debug("keyword='%O'", keyword);
+		CatInteger *ci = (CatInteger *) cat_hash_map_wo_get(priv->keyword_mapping, keyword);
+		cat_unref_ptr(keyword);
+		if (ci!=NULL) {
+			connSymId = cat_integer_value(ci);
+		}
 	}
 
 	return l_create_token(scanner, connSymId, priv->mark_row, priv->left_column, buf);
@@ -359,7 +378,7 @@ static GroRunIToken *l_scan_for_quoted_string(GroRunScannerBase *scanner, int co
 static void l_markLocation(GroRunScannerBase *scanner) {
 	GroRunScannerBasePrivate *priv = grorun_scanner_base_get_instance_private(scanner);
 	priv->mark_column = priv->left_column;
-	priv->mark_row = priv->row;
+	priv->mark_row = priv->left_row;
 }
 
 static int l_getColumn(GroRunScannerBase *scanner) {
@@ -373,6 +392,16 @@ static long long l_getRow(GroRunScannerBase *scanner) {
 	return priv->row;
 }
 
+static int l_getLeftColumn(GroRunScannerBase *scanner) {
+	GroRunScannerBasePrivate *priv = grorun_scanner_base_get_instance_private(scanner);
+	return priv->left_column;
+}
+
+
+static long long l_getLeftRow(GroRunScannerBase *scanner) {
+	GroRunScannerBasePrivate *priv = grorun_scanner_base_get_instance_private(scanner);
+	return priv->left_row;
+}
 
 static int l_getMarkedColumn(GroRunScannerBase *scanner) {
 	GroRunScannerBasePrivate *priv = grorun_scanner_base_get_instance_private(scanner);

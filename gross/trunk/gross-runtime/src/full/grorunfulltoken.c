@@ -35,6 +35,7 @@ struct _GroRunFullTokenPrivate {
 	GroRunLocation *location;
 	CatStringWo *symbol_description;
 	int user_index;
+	GroRunTokenState state;
 };
 
 static void l_token_iface_init(GroRunITokenInterface *iface);
@@ -87,6 +88,7 @@ GroRunFullToken *grorun_full_token_new(GroRunLeftRight indexes, GroRunSymbol *sy
 	priv->value = cat_ref_ptr(value);
 	priv->location = cat_ref_ptr(location);
 	priv->symbol_description = cat_ref_ptr(symbol_description);
+	priv->state = GRORUN_STATE_OK;
 	return result;
 }
 
@@ -129,11 +131,23 @@ static GroRunLocation *l_token_get_location(GroRunIToken *self) {
 	return priv->location;
 }
 
+static GroRunTokenState l_token_get_state(GroRunIToken *self) {
+	GroRunFullTokenPrivate *priv = grorun_full_token_get_instance_private(GRORUN_FULL_TOKEN(self));
+	return priv->state;
+}
+
+static void l_token_set_state(GroRunIToken *self, GroRunTokenState state) {
+	GroRunFullTokenPrivate *priv = grorun_full_token_get_instance_private(GRORUN_FULL_TOKEN(self));
+	priv->state = state;
+}
+
 static void l_token_iface_init(GroRunITokenInterface *iface) {
 	iface->getSymbol = l_token_get_symbol;
 	iface->getValue = l_token_get_value;
 	iface->getIndexes = l_token_get_indexes;
 	iface->getLocation = l_token_get_location;
+	iface->getState = l_token_get_state;
+	iface->setState = l_token_set_state;
 }
 
 /********************* end GroRunIToken implementation *********************/
