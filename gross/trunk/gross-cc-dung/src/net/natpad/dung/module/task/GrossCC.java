@@ -14,6 +14,7 @@ public class GrossCC extends Task {
 	public String outputPath;
 	public String prefix;
 	public String exporter;
+	public String packageName;
 	public boolean updateOnly;
 	public List<String> extraArgs = new ArrayList<String>();
 
@@ -21,6 +22,12 @@ public class GrossCC extends Task {
 	public void addArg(String arg) {
 		extraArgs.add(arg);
 	}
+
+
+	public void setPackage(String p) {
+		this.packageName = p;
+	}
+
 	
 	@Override
 	public void runTask(Session session) throws Exception {
@@ -57,6 +64,11 @@ public class GrossCC extends Task {
 		if (prefix!=null) {
 			argList.add("-Dprefix="+session.resolveProperties(prefix));
 		}
+
+		if (packageName!=null) {
+			argList.add("-Dpackage="+session.resolveProperties(packageName));
+		}
+
 
 		Path grammarPath = session.createModulePath(grammar);
 		argList.add(grammarPath.toString());

@@ -1,0 +1,54 @@
+module {
+
+	name 'mapper';
+	
+	dependencies {
+        module 'gross-cc-dung';
+        module 'gross-runtime';
+ 	}
+
+
+    loader 'gross-java-runtime';
+    loader 'gross-cc';
+    loader 'gross-cc-dung';
+
+
+	clear {
+		remove '[%=module.builddir%]';
+	}
+	
+	compile {
+
+        grossCC {
+            exporter 'java';
+            grammar './etc/mapper.gro';
+            packageName 'net.natpad.mapper';
+            outputPath './src/generated/';
+            updateOnly 'true';
+        }
+
+		javac { 
+			src { path './src/main/'; }
+			src { path './src/generated/'; }
+			destdir './compiled/';
+		}
+	}
+
+	package {
+		jar { 
+			in { 
+				path './compiled/';
+			}
+			destfile './mapper.jar';
+		}
+	}	
+
+
+	export {
+		lib {
+			path './mapper.jar';
+		}
+	}
+
+
+}
