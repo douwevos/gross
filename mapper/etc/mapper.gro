@@ -1,0 +1,44 @@
+terminal ID, L_LCUBRACE, L_RCUBRACE, L_TYPE, SEMI;
+
+document        ⟶ type_list:tl;
+
+type_list     ≣ b ⟶ type_list:tl type_def:td
+                  ⟶ ;
+
+type_def      ≣ b ⟶ L_TYPE ID:id type_block:block ;
+
+type_block      ⟶ L_LCUBRACE type_fields:tfs L_RCUBRACE ;
+
+type_fields   ≣ b ⟶ type_fields:tfs type_field:tf
+                ⟶ ;
+
+type_field      ⟶ ID:ft ID:fn SEMI ;
+
+
+
+imports ｟
+import net.natpad.mapper.model.TypeList;
+import net.natpad.mapper.model.TypeDefinition;
+import net.natpad.mapper.model.Block;
+import net.natpad.mapper.model.FieldList;
+import net.natpad.mapper.model.Field;
+｠
+
+type TypeList document;
+type TypeList type_list;
+type TypeDefinition type_def;
+type Block type_block;
+type FieldList type_fields;
+type Field type_field;
+type String ID;
+
+
+code document           ｟ result = tl; ｠
+
+code type_list      ≣ b ｟ result = new TypeList(tl, td); ｠
+code type_def       ≣ b ｟ result = new TypeDefinition(id, block); ｠
+code type_block         ｟ result = new Block(tfs); ｠
+code type_fields    ≣ b ｟ result = new FieldList(tfs, tf); ｠
+code type_field         ｟ result = new Field(ft, fn); ｠
+
+
