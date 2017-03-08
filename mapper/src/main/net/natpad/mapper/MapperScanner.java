@@ -66,7 +66,13 @@ public class MapperScanner implements Scanner {
     
     
     @Override
-    public Token next()  {
+    public Token next() {
+    	Token result = nextToken();
+    	System.out.println("result="+result);
+    	return result;
+    }
+    
+    public Token nextToken()  {
         
         try {
             while(true) {
@@ -80,6 +86,9 @@ public class MapperScanner implements Scanner {
                     }
                     case '}' : {
                         return createBasicToken("L_RCUBRACE", 1);
+                    }
+                    case ';' : {
+                        return createBasicToken("SEMI", 1);
                     }
                     default : {
                         if (Character.isAlphabetic(lookahead[0])) {
@@ -98,19 +107,32 @@ public class MapperScanner implements Scanner {
     }
 
 
-    private Token scanForId() {
+    private Token scanForId() throws IOException {
         StringBuilder buf = new StringBuilder();
-        int
+        
+        
+        int row = rightRow;
+        int column = rightColumn;
         while(true) {
             int ch = lookahead[0];
             if (ch==-1) {
                 break;
             } else if (ch=='_' || Character.isLetterOrDigit(ch)) {
-                buf.append(ch);
+                buf.append((char) ch);
+                row = rightRow;
+                column = rightColumn;
                 nextChar();
+            } else {
+            	break;
             }
-            break;
         }
+        
+        Location location = new Location(markColumn, markRow, column, row);
+		String identifier = buf.toString();
+		if ("type".equals(identifier)) {
+			return tokenFactory.createToken(symbolMap.get("L_TYPE"), identifier, location, "TYPE");
+		}
+		return tokenFactory.createToken(symbolMap.get("ID"), identifier, location, "ID");
     }
 
 
@@ -131,4 +153,5 @@ public class MapperScanner implements Scanner {
         return tokenFactory.createToken(symbol, null, location , null);
     }
 
+    
 }
