@@ -165,6 +165,7 @@ public class Base implements ParserContext.ReduceAction {
 		CCModel buildModel = specification.createModel();
 		CCStateMachine stateMachine = new CCStateMachine(plogger, buildModel);
 		stateMachine.build();
+		stateMachine.dumpGlrTransitions();
 		return stateMachine;
 	}
 

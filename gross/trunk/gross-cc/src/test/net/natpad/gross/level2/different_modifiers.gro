@@ -1,0 +1,110 @@
+terminal L_LSQBRACE;		# [
+terminal L_RSQBRACE;		# ]
+terminal L_AND;				# &
+terminal L_LT;				# <
+terminal L_GT;				# >
+terminal L_LE;				# <=
+terminal L_GE;				# >=
+terminal L_EQ;				# ==
+terminal L_NE;				# !=
+terminal L_COMMA;			# ,
+terminal L_QUESTION_MARK;	# ?
+terminal L_DOT;				# .
+terminal L_XOR;				# ^
+terminal L_MUL;				# *
+terminal L_DIV;				# /
+terminal L_MOD;				# %
+terminal L_SUB;				# -
+terminal L_ADD;				# +
+terminal L_IS;				# =
+terminal L_NOT;				# !
+terminal L_NEG;				# ~
+terminal L_LPAREN;			# (
+terminal L_RPAREN;			# )
+terminal L_LCUBRACE;		# {
+terminal L_RCUBRACE;		# }
+terminal L_VARARGS;			# ...
+terminal L_AT;				# @
+terminal L_INC;				# ++
+terminal L_DEC;				# --
+terminal L_COLON;			# :
+terminal L_SEMI;			# ;
+terminal L_COLON_COLON;		# ::
+terminal L_BAR;				# |
+
+
+terminal L_LOR;				# ||
+terminal L_LAND;			# &&
+
+terminal L_MUL_IS;			# *=
+terminal L_DIV_IS;			# /=
+terminal L_MOD_IS;			# %=
+terminal L_ADD_IS;			# +=
+terminal L_SUB_IS;			# -=
+terminal L_SHL_IS;			# <<=
+terminal L_SHR_IS;			# >>=
+terminal L_SHRR_IS;			# >>>=
+terminal L_AND_IS;			# &=
+terminal L_XOR_IS;			# ^=
+terminal L_OR_IS;			# |=
+
+
+
+terminal K_BOOLEAN, K_BYTE, K_SHORT, K_INT, K_LONG, K_CHAR, K_DOUBLE, K_FLOAT;
+
+terminal IDENTIFIER, LITERAL;
+
+terminal K_EXTENDS, K_SUPER, K_THIS, K_PACKAGE, K_PUBLIC, K_PRIVATE, K_PROTECTED, K_IMPORT, K_CLASS, K_INTERFACE, K_ABSTRACT, K_STATIC, K_FINAL;
+terminal K_STRICTFP, K_IMPLEMENTS, K_TRANSIENT, K_VOLATILE, K_SYNCHRONIZED, K_NATIVE, K_VOID, K_THROWS, K_ENUM, K_DEFAULT;
+terminal K_IF, K_ASSERT, K_SWITCH, K_CASE, K_BREAK, K_ELSE, K_DO, K_WHILE, K_FOR, K_NEW, K_INSTANCEOF, K_TRY, K_CATCH, K_FINALLY;
+terminal K_CONTINUE, K_THROW, K_RETURN;
+
+CompilationUnit                                ⟶ ClassDeclaration ;
+
+ClassDeclaration                               ⟶ K_CLASS IDENTIFIER ClassBody ;
+
+
+ClassBody                                      ⟶ L_LCUBRACE ClassMemberDeclaration L_RCUBRACE ;
+
+ClassMemberDeclaration   					   ⟶ FieldDeclaration
+                                               ⟶ MethodDeclaration ;
+
+MethodDeclaration                              ⟶ MethodModifier MethodHeader Block ;
+
+MethodModifier                                 ⟶ L_AT
+                                               ⟶ K_PUBLIC
+                                               ⟶ K_FINAL ;
+
+MethodHeader                                   ⟶ NumericType L_AT NumericType  ;
+
+Block                                          ⟶ L_LCUBRACE  ClassDeclaration  L_RCUBRACE ;
+
+
+FieldDeclaration                               ⟶ FieldModifier NumericType  L_SEMI ;
+
+FieldModifier                                  ⟶ L_AT
+                                               ⟶ K_PUBLIC
+                                               ⟶ K_PROTECTED
+                                               ⟶ K_PRIVATE ;
+
+
+NumericType                                    ⟶ IntegralType
+                                               ⟶ FloatingPointType 	;
+
+IntegralType                                   ⟶ K_BYTE
+                                               ⟶ K_LONG
+                                               ⟶ K_CHAR ;
+
+FloatingPointType                              ⟶ K_FLOAT
+                                               ⟶ K_DOUBLE ;
+
+
+
+
+
+
+
+
+
+
+

@@ -494,4 +494,34 @@ public class CCStateMachine {
 		}
 		return dotLink;
 	}
+	
+	
+
+	public void dumpGlrTransitions() {
+		int glrCollisionCount = 0;
+		for(int stateIdx=0 ; stateIdx<stateCount(); stateIdx++) {
+			LrarState state = stateAt(stateIdx);
+			
+			boolean didDescribe = false;
+			Collection<TransitionsForSymbol> values = state.transitionMap.values();
+			for (TransitionsForSymbol transitionsForSymbol : values) {
+				if (transitionsForSymbol.unique.size()>1) {
+					if (!didDescribe) {
+						didDescribe = true;
+						state.describe(System.out, false, null);
+						System.out.println("--------------------------------------------------------------------");
+					}
+					System.out.println("  Glr at state:"+stateIdx+" under symbol:"+transitionsForSymbol.symbol.name);
+					ArrayList<Transition> unique = transitionsForSymbol.unique;
+					for (Transition transition : unique) {
+						System.out.println("    # "+transition.toString());
+						glrCollisionCount++;
+					}
+				}
+			}
+		}
+		
+		System.out.println("GLR collision count:"+glrCollisionCount);
+	}
+	
 }
