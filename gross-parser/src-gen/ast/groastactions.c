@@ -44,7 +44,7 @@ static GroRunIToken *l_extract(GroRunFork *fork, GroRunReduceLayout *reduce_layo
 }
 
 
-GObject *l_iaction_handler_run_action(GroRunIActionHandler *self, GroRunFork *fork, GroRunReduceLayout *reduce_layout, int action_id) {
+static GObject *l_iaction_handler_run_action(GroRunIActionHandler *self, GroRunFork *fork, GroRunReduceLayout *reduce_layout, int action_id) {
 	GObject *result = NULL;
 	int prod_id = grorun_reduce_layout_get_production_id(reduce_layout);
 	switch(prod_id) {

@@ -5,12 +5,17 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import net.natpad.gross.ast.AstScanner;
 import net.natpad.gross.ast.bnf.AstFile;
 import net.natpad.gross.build.CCModel;
 import net.natpad.gross.build.CCStateMachine;
+import net.natpad.gross.build.LrarState;
+import net.natpad.gross.build.Transition;
+import net.natpad.gross.build.TransitionsForSymbol;
 import net.natpad.gross.build.parser.Actions;
 import net.natpad.gross.build.parser.GrossParserTables;
 import net.natpad.gross.definition.GrossScanner;
@@ -77,6 +82,9 @@ public class Gross {
 			}
 			
 			exporter.doExport(stateMachine, astFile);
+
+			stateMachine.dumpGlrTransitions();
+
 			
 //			CaterpillarExporter exporter = new CaterpillarExporter(stateMachine, prefix);
 //			exporter.runExport(new File(exportOutputPath));
@@ -213,5 +221,6 @@ public class Gross {
 			}
 		}
 	}
+	
 	
 }

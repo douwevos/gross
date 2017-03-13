@@ -96,7 +96,6 @@ void grorun_context_create_start_fork(GroRunContext *context, GroRunIToken *firs
 	GroRunContextPrivate *priv = grorun_context_get_instance_private(context);
 	cat_array_wo_clear(priv->running_forks);
 	cat_array_wo_clear(priv->accepted_forks);
-
 	GroRunFork *fork = grorun_fork_new();
 	GroRunState *start_state = grorun_model_get_start_state(priv->state_model);
 	grorun_fork_push(fork, start_state, first_lah);
@@ -130,6 +129,9 @@ void grorun_context_fork(GroRunContext *context, int fork_idx, GroRunTransition 
 	grorun_fork_set_pending_transition(new_fork, pending_transition);
 	cat_array_wo_insert(priv->running_forks, (GObject *) new_fork, fork_idx+1);
 	cat_unref(new_fork);
+
+	cat_log_error("forking %d", cat_array_wo_size(priv->running_forks));
+
 }
 
 void grorun_context_add_fork(GroRunContext *context, GroRunFork *fork) {
