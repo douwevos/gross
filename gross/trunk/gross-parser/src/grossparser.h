@@ -25,11 +25,14 @@
 
 #include "groscanner.h"
 #include "groscannerfactory.h"
+#include "groimessagehandler.h"
 #include "ast/groastirhsenlistable.h"
 #include "ast/groastirhspart.h"
+#include "model/gropmodelbuilder.h"
+#include "model/gropmodel.h"
+#include "machine/gropmachine.h"
+
 #include "../src-gen/groparserconfig.h"
-
-
 #include "../src-gen/ast/groastactions.h"
 
 #endif /* GROSSPARSER_H_ */

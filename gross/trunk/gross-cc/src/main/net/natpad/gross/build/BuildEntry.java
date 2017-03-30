@@ -4,8 +4,6 @@ import java.io.PrintStream;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import net.natpad.gross.runtime.Symbol;
-
 public class BuildEntry {
 
 	public final int id;

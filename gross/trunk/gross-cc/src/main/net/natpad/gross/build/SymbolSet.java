@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import net.natpad.gross.runtime.Symbol;
 
@@ -48,12 +47,6 @@ public class SymbolSet implements Iterable<Symbol> {
 		return false;
 	}
 
-
-	public void addAll(Set<Symbol> otherSet) {
-		if (otherSet!=null) {
-			set.addAll(otherSet);
-		}
-	}
 	
 	@Override
 	public Iterator<Symbol> iterator() {

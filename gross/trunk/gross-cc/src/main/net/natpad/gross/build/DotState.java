@@ -60,10 +60,6 @@ public class DotState {
 		return dotPos>=production.rhsCount();
 	}
 
-	public boolean isAtLast() {
-		return dotPos>=production.rhsCount()-1;
-	}
-
 	public boolean isTerminated() {
 		getLocalFirstSet();
 		return isTerminated;
@@ -175,11 +171,11 @@ public class DotState {
 		}
 	}
 
-	public void postfix(StringBuilder buf,int level) {
+	public void postfix(StringBuilder buf) {
 		if (production.rhsCount()==0) {
 			buf.append("∅");
 		}
-		for(int idx=dotPos + (level>0 ? 1 : 0); idx<production.rhsCount(); idx++) {
+		for(int idx=dotPos; idx<production.rhsCount(); idx++) {
 			ProductionPart partAt = production.rhsAt(idx);
 			if (idx!=dotPos){
 				buf.append(' ');
@@ -203,7 +199,7 @@ public class DotState {
 		StringBuilder buf = new StringBuilder();
 		prefix(buf);
 		buf.append("⚫");
-		postfix(buf, 0);
+		postfix(buf);
 		
 //		if (nullified!=null) {
 //			for(int s : nullified) {

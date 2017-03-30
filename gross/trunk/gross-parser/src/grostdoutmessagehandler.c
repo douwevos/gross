@@ -80,10 +80,13 @@ GroStdOutMessageHandler *gro_std_out_message_handler_new() {
 
 /********************* start GroIMessageHandler implementation *********************/
 
-static void l_handler_message(GroIMessageHandler *handler, CatStringWo *message, GroLocation *start, GroLocation *end) {
+static void l_handler_message(GroIMessageHandler *handler, CatStringWo *message, GroRunLocation *location) {
 //	GroStdOutMessageHandlerPrivate *priv = gro_std_out_message_handler_get_instance_private(GRO_STD_OUT_MESSAGE_HANDLER(handler));
-	if (start) {
-		fprintf(stderr, "at line %lld, column %d: %s\n", gro_location_get_row(start)+1, gro_location_get_column(start)+1, cat_string_wo_getchars(message));
+	if (location) {
+		int begin_column;
+		long long begin_row;
+		grorun_location_get_begin(location, &begin_column, &begin_row);
+		fprintf(stderr, "at line %lld, column %d: %s\n", begin_row+1, begin_column+1, cat_string_wo_getchars(message));
 	} else {
 		fprintf(stderr, "%s\n", cat_string_wo_getchars(message));
 	}

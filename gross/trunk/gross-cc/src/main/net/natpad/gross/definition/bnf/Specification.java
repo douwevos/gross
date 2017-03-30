@@ -97,13 +97,13 @@ public class Specification {
 
 	
 	public List<ProductionPartList> handleEntries(CCModel model, Iterator<RhsRulePart> iter, AtomicInteger offsetSequence, String label) {
-		boolean result = true;
 		List<ProductionPartList> output_pp_arrays = new ArrayList<ProductionPartList>();
 		
-		ProductionPartList e = new ProductionPartList(-1);
+		int off = -1;
 		if (offsetSequence!=null) {
-			e.offset = offsetSequence.incrementAndGet();
+			off = offsetSequence.incrementAndGet();
 		}
+		ProductionPartList e = new ProductionPartList(off);
 		e.label = label;
 		output_pp_arrays.add(e);
 		while(iter.hasNext()) {
@@ -285,7 +285,7 @@ public class Specification {
 				if (psym_part!=null) {
 					l_append_part(output_pp_arrays, psym_part);
 				} else {
-					result = false;
+//					result = false;
 				}
 			} else {
 				throw new RuntimeException("unknown entry type:"+rhsEntry);

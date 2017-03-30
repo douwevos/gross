@@ -25,6 +25,7 @@
 #define PARSER_GROIMESSAGEHANDLER_H_
 
 #include "grolocation.h"
+#include <grossruntime.h>
 #include <caterpillar.h>
 
 G_BEGIN_DECLS
@@ -41,12 +42,12 @@ typedef struct _GroIMessageHandlerInterface      GroIMessageHandlerInterface;
 
 struct _GroIMessageHandlerInterface {
 	GTypeInterface parent_iface;
-	void (*message)(GroIMessageHandler *self, CatStringWo *message, GroLocation *start, GroLocation *end);
+	void (*message)(GroIMessageHandler *self, CatStringWo *message, GroRunLocation *location);
 };
 
 GType gro_imessage_handler_get_type(void);
 
-void gro_imessage_handler_message(GroIMessageHandler *ab_a, CatStringWo *message, GroLocation *start, GroLocation *end);
+void gro_imessage_handler_message(GroIMessageHandler *ab_a, CatStringWo *message, GroRunLocation *location);
 
 G_END_DECLS
 
