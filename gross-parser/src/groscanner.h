@@ -48,8 +48,8 @@
 #define GRO_SYM_KW_IMPORTS           21
 #define GRO_SYM_IDENTIFIER           22
 #define GRO_SYM_CODE_TEXT            23
-#define GRO_SYM_COLON_DOT            24
-#define GRO_SYM_EOL_COMMENT          25
+//#define GRO_SYM_COLON_DOT            24
+#define GRO_SYM_EOL_COMMENT          24
 
 #include <caterpillar.h>
 #include <grossruntime.h>

@@ -1,12 +1,11 @@
-
 /*
-   File:    groimessagehandler.c
-   Project: gross
+   File:    gropterminal.c
+   Project: gross-parser
    Author:  Douwe Vos
-   Date:    May 26, 2016
+   Date:    Mar 17, 2017
    e-mail:  dmvos2000(at)yahoo.com
 
-   Copyright (C) 2016 Douwe Vos.
+   Copyright (C) 2017 Douwe Vos.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -21,14 +20,27 @@
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
-#include "groimessagehandler.h"
 
-G_DEFINE_INTERFACE(GroIMessageHandler, gro_imessage_handler, G_TYPE_OBJECT);
+#include "gropterminal.h"
 
-static void gro_imessage_handler_default_init (GroIMessageHandlerInterface *iface) {
-	iface->message = NULL;
+#include <logging/catlogdefs.h>
+#define CAT_LOG_LEVEL CAT_LOG_ALL
+#define CAT_LOG_CLAZZ "GroPTerminal"
+#include <logging/catlog.h>
+
+G_DEFINE_TYPE(GroPTerminal, grop_terminal, GROP_TYPE_SYMBOL);
+
+static void grop_terminal_class_init(GroPTerminalClass *clazz) {
 }
 
-void gro_imessage_handler_message(GroIMessageHandler *ab_a, CatStringWo *message, GroRunLocation *location) {
-	GRO_IMESSAGE_HANDLER_GET_INTERFACE(ab_a)->message(ab_a, message, location);
+static void grop_terminal_init(GroPTerminal *instance) {
 }
+
+
+GroPTerminal *grop_terminal_new(CatStringWo *name, CatInteger *id) {
+	GroPTerminal *result = g_object_new(GROP_TYPE_TERMINAL, NULL);
+	cat_ref_anounce(result);
+	grop_symbol_construct((GroPSymbol *) result, name, id);
+	return result;
+}
+

@@ -24,7 +24,7 @@
 #include "../full/grorunfulltoken.h"
 
 #include <logging/catlogdefs.h>
-#define CAT_LOG_LEVEL CAT_LOG_INFO
+#define CAT_LOG_LEVEL CAT_LOG_WARN
 #define CAT_LOG_CLAZZ "GroRunScannerBase"
 #include <logging/catlog.h>
 
@@ -204,7 +204,7 @@ static gunichar l_advance_raw(GroRunScannerBasePrivate *priv) {
 		}
 	}
 	priv->next_char = result;
-	cat_log_info("ch=%d, left=%d,%d : right=%d,%d", result, priv->left_column, priv->left_row, priv->right_column, priv->row);
+	cat_log_trace("ch=%d, left=%d,%d : right=%d,%d", result, priv->left_column, priv->left_row, priv->right_column, priv->row);
 	return result;
 }
 
