@@ -23,7 +23,7 @@
 #include "gropdotstate.h"
 
 #include <logging/catlogdefs.h>
-#define CAT_LOG_LEVEL CAT_LOG_ALL
+#define CAT_LOG_LEVEL CAT_LOG_WARN
 #define CAT_LOG_CLAZZ "GroPDotState"
 #include <logging/catlog.h>
 
@@ -120,6 +120,11 @@ GroPSymbolSet *grop_dot_state_get_local_first_set(GroPDotState *dot_state) {
 	return priv->first_set;
 }
 
+GroPProduction *grop_dot_state_get_production(GroPDotState *dot_state) {
+	GroPDotStatePrivate *priv = grop_dot_state_get_instance_private(dot_state);
+	return priv->production;
+}
+
 
 gboolean grop_dot_state_is_at_end(GroPDotState *dot_state) {
 	GroPDotStatePrivate *priv = grop_dot_state_get_instance_private(dot_state);
@@ -170,11 +175,11 @@ GroPDotState *grop_dot_state_shift_normal(GroPDotState *dot_state) {
 	GroPDotStatePrivate *priv = grop_dot_state_get_instance_private(dot_state);
 
 	if (priv->shifted_normal==NULL) {
-		GroPDotState *dot_state = NULL;
+		GroPDotState *sdot_state = NULL;
 		if (!grop_dot_state_is_at_end(dot_state)) {
-			dot_state = grop_dot_state_new(priv->production, priv->dot_pos+1, priv->nullified);
+			sdot_state = grop_dot_state_new(priv->production, priv->dot_pos+1, priv->nullified);
 		}
-		priv->shifted_normal = dot_state;
+		priv->shifted_normal = sdot_state;
 	}
 	return priv->shifted_normal;
 }
@@ -185,7 +190,7 @@ GroPDotState *grop_dot_state_shift_nullify(GroPDotState *dot_state) {
 	GroPDotStatePrivate *priv = grop_dot_state_get_instance_private(dot_state);
 
 	if (priv->shifted_nullified==NULL) {
-		GroPDotState *dot_state = NULL;
+		GroPDotState *sdot_state = NULL;
 		if (!grop_dot_state_is_at_end(dot_state)) {
 
 			CatIntArrayWo *next_nullified = NULL;
@@ -198,10 +203,10 @@ GroPDotState *grop_dot_state_shift_nullify(GroPDotState *dot_state) {
 				cat_int_array_wo_append(next_nullified, priv->dot_pos);
 			}
 
-			dot_state = grop_dot_state_new(priv->production, priv->dot_pos+1, next_nullified);
+			sdot_state = grop_dot_state_new(priv->production, priv->dot_pos+1, next_nullified);
 			cat_unref_ptr(next_nullified);
 		}
-		priv->shifted_nullified = dot_state;
+		priv->shifted_nullified = sdot_state;
 	}
 	return priv->shifted_nullified;
 }

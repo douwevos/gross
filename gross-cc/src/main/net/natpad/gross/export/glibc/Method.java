@@ -12,6 +12,7 @@ public class Method {
 	public String methodName;
 	public ClassName returnType;
 
+	public boolean isStatic = false;
 	public boolean isPrivate = false;
 	public boolean isConstructor = false;
 	
@@ -28,6 +29,10 @@ public class Method {
 	public void writeC(Type thisType, PrintWriter out) {
 		String indent = "";
 
+		if (isPrivate) {
+			out.print("static ");
+		}
+		
 		if (returnType!=null) {
 			out.print(indent+returnType.fullTypePtr()+methodName+"(");
 		} else {
@@ -99,6 +104,9 @@ public class Method {
 
 
 	public void writeH(Type thisType, PrintWriter out) {
+		if (isPrivate) {
+			return;
+		}
 		String indent = "";
 
 		if (returnType!=null) {

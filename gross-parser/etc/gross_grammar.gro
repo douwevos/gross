@@ -2,7 +2,6 @@ terminal SEMI, RULE_SEPERATOR, IDENTIFIER, COLON, COMMA;
 terminal TERMINAL, STAR, PLUS, EXCL, BAR, INDEX_MARK, CODE, CODE_TEXT, NUMBER, IMPORTS, TYPE;
 terminal LPAREN, RPAREN, LSQBRACK, RSQBRACK, LCUBRACK, RCUBRACK;
 
-
 spec                  ≣ f ⟶ term_decl_list:td  production_list:pl  imports_code:im  type_definition_list:tl  code_definition_list:cl
                       ≣ b ⟶ term_decl_list:td  production_list:pl
 						;

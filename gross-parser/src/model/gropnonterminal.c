@@ -137,6 +137,7 @@ gboolean grop_non_terminal_compute_first_set(GroPNonTerminal *non_term) {
 		for(rhs_idx=0; rhs_idx<rhs_count; rhs_idx++) {
 			GroPProductionPart *prod_part = grop_production_rhs_at(production, rhs_idx);
 			GroPSymbol *pp_sym = grop_production_part_get_symbol(prod_part);
+			cat_log_error("pp_sym=%O", pp_sym);
 			if (grop_symbol_set_add(priv->first_set, pp_sym)) {
 				did_change = TRUE;
 			}

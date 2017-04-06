@@ -23,6 +23,7 @@
 #include "gropbuildentry.h"
 #include "gropkernel.h"
 #include "groplrarstate.h"
+#include "gropsymbolkey.h"
 
 #include <logging/catlogdefs.h>
 #define CAT_LOG_LEVEL CAT_LOG_ALL
@@ -79,8 +80,13 @@ GroPBuildEntry *grop_build_entry_new(GroPKernel *main_dot_set, int id) {
 	GroPBuildEntry *result = g_object_new(GROP_TYPE_BUILD_ENTRY, NULL);
 	cat_ref_anounce(result);
 	GroPBuildEntryPrivate *priv = grop_build_entry_get_instance_private(result);
+	if (!GROP_IS_KERNEL(main_dot_set)) {
+		cat_log_error("wrong here");
+		cat_stacktrace_print();
+	}
 	priv->kernel = cat_ref_ptr(main_dot_set);
 	priv->id = id;
+	priv->forward_map = cat_hash_map_wo_new((GHashFunc) grop_symbol_key_hash, (GEqualFunc) grop_symbol_key_equal);
 	return result;
 }
 

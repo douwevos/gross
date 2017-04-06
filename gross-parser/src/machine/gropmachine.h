@@ -56,6 +56,7 @@ struct _GroPMachineClass {
 GType grop_machine_get_type();
 
 GroPMachine *grop_machine_new(GroIMessageHandler *message_handler, GroPModel *model);
+void grop_machine_build(GroPMachine *machine);
 
 GroPDotLink *grop_machine_get_or_create_dot_link(GroPMachine *machine, GroPDotState *dot_state);
 

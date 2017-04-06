@@ -59,6 +59,8 @@ GroPDotState *grop_dot_state_new(GroPProduction *production, int dot_pos, CatInt
 
 GroPSymbolSet *grop_dot_state_get_local_first_set(GroPDotState *dot_state);
 
+GroPProduction *grop_dot_state_get_production(GroPDotState *dot_state);
+
 gboolean grop_dot_state_is_at_end(GroPDotState *dot_state);
 gboolean grop_dot_state_is_terminated(GroPDotState *dot_state);
 gboolean grop_dot_state_is_nullified(GroPDotState *dot_state, int dotPos);
@@ -71,6 +73,8 @@ GroPSymbol *grop_dot_state_get_symbol_at_dot(GroPDotState *dot_state);
 
 int grop_dot_state_hash(GroPDotState *dot_state);
 gboolean grop_dot_state_equal(const GroPDotState *dot_state_a, const GroPDotState *dot_state_b);
+
+
 
 G_END_DECLS
 

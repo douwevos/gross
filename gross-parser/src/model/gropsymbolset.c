@@ -82,7 +82,6 @@ gboolean grop_symbol_set_add(GroPSymbolSet *symbol_set, GroPSymbol *sym) {
 	GroPSymbolSetPrivate *priv = grop_symbol_set_get_instance_private(symbol_set);
 	GObject *old = cat_hash_set_add(priv->set, (GObject *) sym);
 	if (old) {
-		cat_unref_ptr(old);
 		return FALSE;
 	}
 	cat_unref_ptr(priv->hash);
