@@ -216,6 +216,7 @@ public class AstCreator {
 		
 		
 		Method actionMethod = new Method("run_action", getOrCreateClassName("G:Object:object"));
+		actionMethod.isPrivate = true;
 		actionMethod.arguments.add(new Argument(getOrCreateClassName("GroRun:Fork"), "fork"));
 		actionMethod.arguments.add(new Argument(getOrCreateClassName("GroRun:ReduceLayout:reduce_layout"), "reduce_layout"));
 		actionMethod.arguments.add(new Argument(ClassName.INT, "action_id"));
@@ -475,9 +476,9 @@ public class AstCreator {
 					buf = new StringBuilder();
 					if (field.isPrivate) {
 						buf.append("	"+className.camelPrefix+className.camelPostfix+"Private *priv = "+className.fullLow()+"_get_instance_private(self);\n");
-						buf.append("	return ("+fieldClassName.fullTypePtr()+") grorun_itoken_get_value(priv->"+fieldLabel+");");
+						buf.append("	return priv->"+fieldLabel+"==NULL ? NULL : ("+fieldClassName.fullTypePtr()+") grorun_itoken_get_value(priv->"+fieldLabel+");");
 					} else {
-						buf.append("	return ("+fieldClassName.fullTypePtr()+") grorun_itoken_get_value(self->"+fieldLabel+");");
+						buf.append("	return self->"+fieldLabel+"==NULL ? NULL : ("+fieldClassName.fullTypePtr()+") grorun_itoken_get_value(self->"+fieldLabel+");");
 					}
 					methodGet.content = buf.toString();
 					addMethod(methodGet);

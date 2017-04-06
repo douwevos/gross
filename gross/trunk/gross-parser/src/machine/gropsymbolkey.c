@@ -102,7 +102,7 @@ gboolean grop_symbol_key_equal(const GroPSymbolKey *symbol_key_a, const GroPSymb
 static void l_stringable_print(CatIStringable *self, struct _CatStringWo *append_to) {
 	GroPSymbolKey *instance = GROP_SYMBOL_KEY(self);
 	GroPSymbolKeyPrivate *priv = grop_symbol_key_get_instance_private(instance);
-	cat_string_wo_append_char(append_to, priv->is_nullified ? '+' : '-');
+	cat_string_wo_append_char(append_to, priv->is_nullified ? '-' : '+');
 	cat_string_wo_append(append_to, grop_symbol_get_name(priv->symbol));
 }
 

@@ -28,7 +28,7 @@
 #include "gropbuildentry.h"
 
 #include <logging/catlogdefs.h>
-#define CAT_LOG_LEVEL CAT_LOG_ALL
+#define CAT_LOG_LEVEL CAT_LOG_WARN
 #define CAT_LOG_CLAZZ "GroPMachine"
 #include <logging/catlog.h>
 
@@ -123,7 +123,12 @@ void grop_machine_build(GroPMachine *machine) {
 		cat_log_info("Creating statemachine iteration %d, nr-of-states thusfar %d", round, cat_hash_map_wo_size(priv->map));
 		while(cat_array_wo_size(work_list)!=0) {
 
-			GroPKernel *main_dot_set = (GroPKernel *) cat_array_wo_get_first(work_list);
+			GroPKernel *main_dot_set = NULL;
+			cat_array_wo_remove_first(work_list, (GObject **) &main_dot_set);
+			if (!GROP_IS_KERNEL(main_dot_set)) {
+				cat_log_error("main_dot_set not a kernel:%O", main_dot_set);
+				cat_stacktrace_print();
+			}
 			GroPBuildEntry *build_entry = (GroPBuildEntry *) cat_hash_map_wo_get(priv->map, (GObject *) main_dot_set);
 			if (build_entry==NULL) {
 				build_entry = grop_build_entry_new(main_dot_set, priv->state_sequence++);
@@ -162,41 +167,55 @@ void grop_machine_build(GroPMachine *machine) {
 
 		cat_log_debug("Analyzing DotLinks for recursion");
 
+		CatIMapIterator *miter = cat_hash_map_wo_iterator(priv->dot_links);
+		gpointer key;
+		GroPDotLink *dot_link;
+		while(cat_imap_iterator_next(miter, &key, &dot_link)) {
+			cat_log_debug("  %O", dot_link);
+
+			GroPDotState *dl_ds = grop_dot_link_get_dot_state(dot_link);
+			if (grop_dot_state_is_at_end(dl_ds)) {
+				GroPProduction *dl_prod = grop_dot_state_get_production(dl_ds);
+				GroPNonTerminal *lhs_nt = grop_production_get_lhs(dl_prod);
+				cat_log_debug("  ꩜ Testing");
+				cat_log_debug("      ⬡ %O", lhs_nt);
+				CatIIterator *p_iter = grop_non_terminal_iterator(lhs_nt);
+				while(cat_iiterator_has_next(p_iter)) {
+					GroPProduction *lhs_prod = (GroPProduction *) cat_iiterator_next(p_iter);
+					cat_log_debug("      ⬅ %O", lhs_prod);
+					GroPDotState *tds = grop_dot_state_new(lhs_prod, 0, NULL);
+					while(!grop_dot_state_is_at_end(tds)) {
+						GroPDotState *shifted = grop_dot_state_shift_normal(tds);
+						GroPSymbol *sad = grop_dot_state_get_symbol_at_dot(tds);
+						cat_log_debug("       ⬌ %O    %O", tds, shifted);
+						if (GROP_IS_NON_TERMINAL(sad)) {
+							GroPNonTerminal *nterec = (GroPNonTerminal *) sad;
+							GroPSymbolSet *firstset = grop_non_terminal_get_first_set(nterec);
+							if (grop_symbol_set_contains(firstset, lhs_nt)) {
+								GroPDotLink *tdotlink = cat_hash_map_wo_get(priv->dot_links, shifted);
+								if (tdotlink!=NULL) {
+									cat_log_debug("          Adding reference %O", grop_dot_link_get_dot_state(tdotlink));
+									had_changes |= grop_dot_link_add_referred_by_state(dot_link, grop_dot_link_get_dot_state(tdotlink));
+								}
+							}
+						}
+						cat_ref_ptr(shifted);
+						cat_unref_ptr(tds);
+						tds = shifted;
+					}
+					cat_unref_ptr(tds);
+				}
+				cat_unref_ptr(p_iter);
+			}
+		}
+		cat_unref_ptr(miter);
+
 //		for(DotLink dotLink : dotLinks.values()) {
 //			cat_log_debug("  %s", dotLink);
 //
-//			if (dotLink.dotState.isAtEnd()) {
-//				NonTerminalExt lhs = dotLink.dotState.production.lhs;
-//				cat_log_debug("  ꩜ Testing");
-//				cat_log_debug("      ⬡ %s", lhs);
-//
-//				for(Production p : lhs) {
-//					cat_log_debug("      ⬅ %s", p);
-//					DotState tds = new DotState(p, 0, null);
-//					while(!tds.isAtEnd()) {
-//						DotState shifted = tds.shiftNormal();
-//						Symbol sad = tds.getSymbolAtDot();
-//						cat_log_debug("       ⬌ %s", tds);
-//						if (sad instanceof NonTerminalExt) {
-//							NonTerminalExt nterec = (NonTerminalExt) sad;
-//							if (nterec.firstSet().contains(lhs)) {
-//								DotLink tdotLink = dotLinks.get(shifted);
-//								if (tdotLink!=null) {
-//									cat_log_debug("          Adding reference %s", tdotLink.dotState);
-//									had_changes |= dotLink.addReferredBy(tdotLink.dotState);
-//								}
-//							}
-//						}
-//						tds = shifted;
-//					}
-//				}
-//
-//			}
-//
 //		}
 //
-//
-//
+		cat_hash_map_wo_enlist_keys(priv->map, work_list);
 //		workList.addAll(map.keySet());
 //	}
 //
@@ -326,9 +345,10 @@ static void l_create_forward_mapping(GroPMachinePrivate *priv, CatHashMapWo *for
 	if (dot_set==NULL) {
 		dot_set = grop_kernel_new(priv->kernel_sequence++);
 		cat_hash_map_wo_put(forward_map, (GObject *) symbol_at_dot, (GObject *) dot_set);
-		cat_unref(dot_set);
+//		cat_unref(dot_set);
 	}
-	cat_log_debug("                       add-shift sym=%O, dotset=%O, state=%O", symbol_at_dot, dot_set, follow_dot_link);
+//	cat_log_debug("                       add-shift sym=%O, dotset=%O, state=%O", symbol_at_dot, dot_set, follow_dot_link);
+	cat_log_error("kernel=%O", dot_set);
 	grop_kernel_add(dot_set, follow_dot_link);
 }
 
@@ -348,7 +368,7 @@ gboolean l_recurse_worward(GroPMachine *machine, GroPBuildEntry *build_entry, Gr
 	CatArrayWo /*<DotLink>*/ *next_level = cat_array_wo_new();
 	while(TRUE) {
 		GroPSymbol *cons_prod_sym = grop_dot_state_get_symbol_at_dot(grop_dot_link_get_dot_state(main_link));
-		cat_log_debug("%O        main-link=%s", indent, grop_dot_link_get_dot_state(main_link));
+		cat_log_debug("%O        main-link=%O", indent, grop_dot_link_get_dot_state(main_link));
 		if (cons_prod_sym!=NULL) {
 
 			GroPDotLink *next_dot_link = grop_machine_get_or_create_dot_link(machine, grop_dot_state_shift_normal(grop_dot_link_get_dot_state(main_link)));
@@ -425,14 +445,14 @@ gboolean l_map_forward(GroPMachine *machine, GroPBuildEntry *build_entry, GroPDo
 	CatStringWo *indent = cat_string_wo_new_with("");
 	cat_log_debug("  main_dot_link=%O", main_dot_link);
 	while(head_link!=NULL) {
-		cat_log_debug("    head-link=%s", head_link);
+		cat_log_debug("    head-link=%O", head_link);
 		GroPDotLink *next_link = NULL;
 		GroPSymbol *symbol_at_dot = grop_dot_state_get_symbol_at_dot(grop_dot_link_get_dot_state(head_link));
 		if (symbol_at_dot!=NULL) {
 
 			GroPDotLink *head_follow_dot_link = grop_machine_get_or_create_dot_link(machine, grop_dot_state_shift_normal(grop_dot_link_get_dot_state(head_link)));
 			result |= grop_dot_link_add_referred_by_link(head_follow_dot_link, head_link);
-			cat_log_debug("    head_follow_dot_link=%s", head_follow_dot_link);
+			cat_log_debug("    head_follow_dot_link=%O", head_follow_dot_link);
 			GroPSymbolKey *tsk = grop_symbol_key_new(symbol_at_dot, FALSE);
 			l_create_forward_mapping(priv, grop_build_entry_get_forward_map(build_entry), tsk, head_follow_dot_link);
 			cat_unref_ptr(tsk);
@@ -441,7 +461,7 @@ gboolean l_map_forward(GroPMachine *machine, GroPBuildEntry *build_entry, GroPDo
 				GroPNonTerminal *nte = (GroPNonTerminal *) symbol_at_dot;
 
 				/* deeply recurse into the non Terminal */
-				CatHashSet *considered = cat_hash_set_new((GHashFunc) grop_production_part_hash, (GEqualFunc) grop_production_part_equal);
+				CatHashSet *considered = cat_hash_set_new((GHashFunc) grop_production_hash, (GEqualFunc) grop_production_equal);
 				CatIIterator *prod_iter = grop_non_terminal_iterator(nte);
 				while(cat_iiterator_has_next(prod_iter)) {
 					GroPProduction *prod = (GroPProduction *) cat_iiterator_next(prod_iter);

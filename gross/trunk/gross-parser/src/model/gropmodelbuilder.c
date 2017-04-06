@@ -140,6 +140,7 @@ GroPModel *grop_model_builder_do_build(GroPModelBuilder *builder) {
 		GroAstProductionDefinition *prod_def = GROAST_PRODUCTION_DEFINITION(grorun_itoken_get_value(tk_pd));
 		GroRunIToken *tk_lhs_name = groast_production_definition_tk_lhsName(prod_def);
 		CatStringWo *lhs_name = CAT_STRING_WO(grorun_itoken_get_value(tk_lhs_name));
+		cat_log_error("declaring non-term:%O", lhs_name);
 		if (grop_model_get_symbol_by_name(result, lhs_name)!=NULL) {
 			CatStringWo *msg = cat_string_wo_new_with("Symbol was already defined");
 			gro_imessage_handler_message(priv->msg_handler, msg, grorun_itoken_get_location(tk_lhs_name));
@@ -226,6 +227,9 @@ static CatArrayWo *l_handler_entries(GroPModelBuilder *builder, GroPModel *model
 
 	while(priv->success && cat_iiterator_has_next(iter)) {
 		GObject *rhs_entry = cat_iiterator_next(iter);
+		if (GRORUN_IS_ITOKEN(rhs_entry)) {
+			rhs_entry = grorun_itoken_get_value(rhs_entry);
+		}
 
 		if (GROAST_IS_RHS_SUB_LIST(rhs_entry)) {
 			/* this is a sub list  (A B | B | C D E) */
@@ -407,6 +411,7 @@ static CatArrayWo *l_handler_entries(GroPModelBuilder *builder, GroPModel *model
 			}
 			cat_unref_ptr(psym_part);
 		} else {
+			cat_log_error("unknown type:%O", rhs_entry);
 //			throw new RuntimeException("unknown entry type:"+rhsEntry);
 			priv->success = FALSE;
 			goto done;

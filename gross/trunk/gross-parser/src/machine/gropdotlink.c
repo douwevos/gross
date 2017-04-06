@@ -87,7 +87,6 @@ gboolean grop_dot_link_add_referred_by_state(GroPDotLink *dot_link, GroPDotState
 	GroPDotLinkPrivate *priv = grop_dot_link_get_instance_private(dot_link);
 	GObject *old = cat_hash_set_add(priv->referred_by, (GObject *) by);
 	if (old) {
-		cat_unref_ptr(old);
 		return FALSE;
 	}
 	return TRUE;

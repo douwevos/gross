@@ -57,6 +57,7 @@ static void grop_production_init(GroPProduction *instance) {
 
 static void l_dispose(GObject *object) {
 	cat_log_detail("dispose:%p", object);
+	cat_stacktrace_print();
 	GroPProduction *instance = GROP_PRODUCTION(object);
 	GroPProductionPrivate *priv = grop_production_get_instance_private(instance);
 	cat_unref_ptr(priv->excluded_parts);
@@ -79,7 +80,12 @@ GroPProduction *grop_production_new(CatInteger *prod_id, int offset, CatStringWo
 	GroPProduction *result = g_object_new(GROP_TYPE_PRODUCTION, NULL);
 	cat_ref_anounce(result);
 	GroPProductionPrivate *priv = grop_production_get_instance_private(result);
+	cat_ref_ptr(result);
+	cat_ref_ptr(result);
+	cat_ref_ptr(result);
+	cat_ref_ptr(result);
 	priv->id = cat_ref_ptr(prod_id);
+	cat_log_detail("error:%p, id=%O", result, prod_id);
 	priv->offset = offset;
 	priv->label = cat_ref_ptr(label);
 	priv->lhs = cat_ref_ptr(lhs);
@@ -137,6 +143,16 @@ CatIIterator *grop_production_iterator(GroPProduction *production) {
 	GroPProductionPrivate *priv = grop_production_get_instance_private(production);
 	return cat_array_wo_iterator(priv->parts);
 }
+
+int grop_production_hash(GroPProduction *production) {
+	GroPProductionPrivate *priv = grop_production_get_instance_private(production);
+	return cat_integer_value(priv->id);
+}
+
+gboolean grop_production_equal(const GroPProduction *production_a, const GroPProduction *production_b) {
+	return production_a == production_b;
+}
+
 
 /********************* start CatIStringable implementation *********************/
 

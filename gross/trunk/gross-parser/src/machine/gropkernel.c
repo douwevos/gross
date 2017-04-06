@@ -103,6 +103,11 @@ gboolean grop_kernel_add(GroPKernel *kernel, GroPDotLink *dot_link) {
 		return FALSE;
 	}
 
+	if (priv->main==NULL) {
+		cat_stacktrace_print();
+		cat_log_error("kernel=%O , priv-main=%p", kernel, priv->main);
+	}
+
 	gboolean result = FALSE;
 	if (cat_hash_map_wo_put(priv->main, (GObject *) grop_dot_link_get_dot_state(dot_link), (GObject *) dot_link)) {
 		cat_unref_ptr(priv->hash);
@@ -129,7 +134,7 @@ int grop_kernel_hash(GroPKernel *kernel) {
 		CatIIterator *ds_iter = cat_array_wo_iterator(main_keys);
 		while(cat_iiterator_has_next(ds_iter)) {
 			GroPDotState *dot_state = (GroPDotState *) cat_iiterator_next(ds_iter);
-			val = val*273 + grop_dot_state_hash(dot_state)*12;
+			val = val + grop_dot_state_hash(dot_state)*13;
 		}
 		cat_unref_ptr(ds_iter);
 		priv->hash = cat_integer_new(val);
@@ -149,16 +154,15 @@ gboolean grop_kernel_equal(const GroPKernel *kernel_a, const GroPKernel *kernel_
 		return FALSE;
 	}
 	gboolean result = TRUE;
-	CatArrayWo *keys_a = cat_hash_map_wo_enlist_keys(priv_a->main, NULL);
-	CatIIterator *a_iter = cat_array_wo_iterator(keys_a);
-	while(cat_iiterator_has_next(a_iter)) {
-		GroPDotState *key_a = (GroPDotState *) cat_iiterator_next(a_iter);
+	CatIMapIterator *amiter = cat_hash_map_wo_iterator(priv_a->main);
+	GroPDotState *key_a = NULL;
+	while(cat_imap_iterator_next(amiter, &key_a, NULL)) {
 		if (cat_hash_map_wo_get(priv_b->main, key_a)==NULL) {
 			result = FALSE;
 			break;
 		}
 	}
-	cat_unref_ptr(a_iter);
+	cat_unref_ptr(amiter);
 	return result;
 }
 

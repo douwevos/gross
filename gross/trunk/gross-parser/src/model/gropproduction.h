@@ -66,6 +66,9 @@ int grop_production_rhs_count(GroPProduction *production);
 GroPProductionPart *grop_production_rhs_at(GroPProduction *production, int idx);
 CatIIterator *grop_production_iterator(GroPProduction *production);
 
+int grop_production_hash(GroPProduction *production);
+gboolean grop_production_equal(const GroPProduction *production_a, const GroPProduction *production_b);
+
 G_END_DECLS
 
 #endif /* MACHINE_GROPPRODUCTION_H_ */
