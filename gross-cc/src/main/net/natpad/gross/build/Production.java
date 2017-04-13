@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import net.natpad.gross.runtime.Symbol;
 import net.natpad.gross.runtime.Terminal;
 
 public class Production implements Iterable<ProductionPart> {
@@ -102,5 +103,17 @@ public class Production implements Iterable<ProductionPart> {
 		}
 		
 		return buf.toString().substring(1);
+	}
+
+	public boolean startsWith(List<Symbol> syms) {
+		if (parts.length!=syms.size()) {
+			return false;
+		}
+		for(int idx=0; idx<syms.size(); idx++) {
+			if (parts[idx].symbol!=syms.get(idx)) {
+				return false;
+			}
+		}
+		return true;
 	}
 }

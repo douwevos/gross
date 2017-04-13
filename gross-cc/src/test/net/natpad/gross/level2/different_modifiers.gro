@@ -59,45 +59,20 @@ terminal K_STRICTFP, K_IMPLEMENTS, K_TRANSIENT, K_VOLATILE, K_SYNCHRONIZED, K_NA
 terminal K_IF, K_ASSERT, K_SWITCH, K_CASE, K_BREAK, K_ELSE, K_DO, K_WHILE, K_FOR, K_NEW, K_INSTANCEOF, K_TRY, K_CATCH, K_FINALLY;
 terminal K_CONTINUE, K_THROW, K_RETURN;
 
-CompilationUnit                                ⟶ ClassDeclaration ;
-
-ClassDeclaration                               ⟶ K_CLASS IDENTIFIER ClassBody ;
 
 
-ClassBody                                      ⟶ L_LCUBRACE ClassMemberDeclaration L_RCUBRACE ;
+ClassMemberDeclaration   					   ⟶ FieldDeclaration K_FOR
+                                               ⟶ MethodDeclaration K_NEW ;
 
-ClassMemberDeclaration   					   ⟶ FieldDeclaration
-                                               ⟶ MethodDeclaration ;
+MethodDeclaration                              ⟶ MethodModifier K_DOUBLE ;
 
-MethodDeclaration                              ⟶ MethodModifier MethodHeader Block ;
-
-MethodModifier                                 ⟶ L_AT
-                                               ⟶ K_PUBLIC
-                                               ⟶ K_FINAL ;
-
-MethodHeader                                   ⟶ NumericType L_AT NumericType  ;
-
-Block                                          ⟶ L_LCUBRACE  ClassDeclaration  L_RCUBRACE ;
+MethodModifier                                 ⟶ L_AT;
 
 
-FieldDeclaration                               ⟶ FieldModifier NumericType  L_SEMI ;
+FieldDeclaration                               ⟶ FieldModifier K_DOUBLE  ;
 
 FieldModifier                                  ⟶ L_AT
-                                               ⟶ K_PUBLIC
-                                               ⟶ K_PROTECTED
                                                ⟶ K_PRIVATE ;
-
-
-NumericType                                    ⟶ IntegralType
-                                               ⟶ FloatingPointType 	;
-
-IntegralType                                   ⟶ K_BYTE
-                                               ⟶ K_LONG
-                                               ⟶ K_CHAR ;
-
-FloatingPointType                              ⟶ K_FLOAT
-                                               ⟶ K_DOUBLE ;
-
 
 
 

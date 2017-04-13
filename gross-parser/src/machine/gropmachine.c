@@ -120,7 +120,7 @@ void grop_machine_build(GroPMachine *machine) {
 	while(had_changes) {
 		round++;
 		had_changes = FALSE;
-		cat_log_info("Creating statemachine iteration %d, nr-of-states thusfar %d", round, cat_hash_map_wo_size(priv->map));
+		cat_log_error("Creating statemachine iteration %d, nr-of-states thusfar %d", round, cat_hash_map_wo_size(priv->map));
 		while(cat_array_wo_size(work_list)!=0) {
 
 			GroPKernel *main_dot_set = NULL;
@@ -155,7 +155,9 @@ void grop_machine_build(GroPMachine *machine) {
 					continue;
 				}
 				if (cat_hash_map_wo_get(priv->map, fwd_kernel)!=NULL) {
-					GroPKernel *mapped_kernel = (GroPKernel *) cat_hash_map_wo_get(priv->map, fwd_kernel);
+					GroPBuildEntry *mapped_build_entry = (GroPBuildEntry *) cat_hash_map_wo_get(priv->map, fwd_kernel);
+					GroPKernel *mapped_kernel = grop_build_entry_get_kernel(mapped_build_entry);
+					cat_log_debug("    mapped_kernel=%O", mapped_kernel);
 					cat_hash_map_wo_put(build_entry_fwd_map, (GObject *) symbol, (GObject *) mapped_kernel);
 				} else {
 					cat_array_wo_append(work_list, (GObject *) fwd_kernel);
@@ -344,11 +346,12 @@ static void l_create_forward_mapping(GroPMachinePrivate *priv, CatHashMapWo *for
 	GroPKernel *dot_set = (GroPKernel *) cat_hash_map_wo_get(forward_map, symbol_at_dot);
 	if (dot_set==NULL) {
 		dot_set = grop_kernel_new(priv->kernel_sequence++);
+		cat_log_debug("new:%O", dot_set);
 		cat_hash_map_wo_put(forward_map, (GObject *) symbol_at_dot, (GObject *) dot_set);
 //		cat_unref(dot_set);
 	}
 //	cat_log_debug("                       add-shift sym=%O, dotset=%O, state=%O", symbol_at_dot, dot_set, follow_dot_link);
-	cat_log_error("kernel=%O", dot_set);
+	cat_log_debug("kernel=%O", dot_set);
 	grop_kernel_add(dot_set, follow_dot_link);
 }
 
@@ -368,7 +371,7 @@ gboolean l_recurse_worward(GroPMachine *machine, GroPBuildEntry *build_entry, Gr
 	CatArrayWo /*<DotLink>*/ *next_level = cat_array_wo_new();
 	while(TRUE) {
 		GroPSymbol *cons_prod_sym = grop_dot_state_get_symbol_at_dot(grop_dot_link_get_dot_state(main_link));
-		cat_log_debug("%O        main-link=%O", indent, grop_dot_link_get_dot_state(main_link));
+		cat_log_debug("%O        main-link=%O, build_entry=%O", indent, grop_dot_link_get_dot_state(main_link), build_entry);
 		if (cons_prod_sym!=NULL) {
 
 			GroPDotLink *next_dot_link = grop_machine_get_or_create_dot_link(machine, grop_dot_state_shift_normal(grop_dot_link_get_dot_state(main_link)));

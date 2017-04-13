@@ -1,0 +1,31 @@
+terminal L_AND;				# &
+terminal L_SUB, L_MUL;				# -
+terminal L_ADD, L_DIV, L_LT;				# +
+terminal L_SEMI;			# ;
+
+terminal IDENTIFIER, LITERAL;
+
+excode             ⟶ expression L_SEMI ;
+
+expression         ⟶ add_expression
+                   ⟶ expression L_LT add_expression
+                   ⟶ expression L_SUB add_expression;
+
+add_expression     ⟶ and_expression
+                   ⟶ add_expression L_LT L_LT and_expression
+                   ⟶ add_expression L_LT L_DIV and_expression ;
+
+and_expression     ⟶ primitive
+                   ⟶ and_expression L_AND primitive	  ;
+
+primitive          ⟶ IDENTIFIER ;
+
+
+
+
+
+
+
+
+
+
