@@ -54,6 +54,7 @@ GType grop_build_entry_get_type();
 
 GroPBuildEntry *grop_build_entry_new(GroPKernel *main_dot_set, int id);
 
+GroPKernel *grop_build_entry_get_kernel(GroPBuildEntry *build_entry);
 int grop_build_entry_get_id(GroPBuildEntry *build_entry);
 
 CatHashMapWo *grop_build_entry_get_forward_map(GroPBuildEntry *build_entry);

@@ -1,8 +1,12 @@
 package net.natpad.gross.build;
 
 import java.io.PrintStream;
+import java.lang.annotation.Documented;
+import java.lang.annotation.Native;
 import java.util.HashMap;
 import java.util.HashSet;
+
+import javax.xml.bind.annotation.XmlList;
 
 import net.natpad.gross.runtime.ReduceLayout;
 import net.natpad.gross.runtime.State;
@@ -47,6 +51,10 @@ public class LrarState {
 		}
 	}
 
+	public String testIt() {
+		return null;
+	}
+	
 	public void describe(PrintStream out, boolean full, HashMap<DotState, DotLink> linkMap) {
 		out.println("state "+id);
 		out.println();

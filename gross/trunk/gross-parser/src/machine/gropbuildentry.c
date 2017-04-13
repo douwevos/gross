@@ -90,6 +90,12 @@ GroPBuildEntry *grop_build_entry_new(GroPKernel *main_dot_set, int id) {
 	return result;
 }
 
+GroPKernel *grop_build_entry_get_kernel(GroPBuildEntry *build_entry) {
+	GroPBuildEntryPrivate *priv = grop_build_entry_get_instance_private(build_entry);
+	return priv->kernel;
+}
+
+
 int grop_build_entry_get_id(GroPBuildEntry *build_entry) {
 	GroPBuildEntryPrivate *priv = grop_build_entry_get_instance_private(build_entry);
 	return priv->id;

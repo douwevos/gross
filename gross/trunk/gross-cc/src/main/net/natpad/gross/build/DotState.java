@@ -1,6 +1,8 @@
 package net.natpad.gross.build;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 import net.natpad.gross.runtime.Symbol;
 import net.natpad.gross.runtime.Terminal;
@@ -236,5 +238,14 @@ public class DotState {
 	}
 
 
-
+	public List<Symbol> stripNullified() {
+		ArrayList<Symbol> result = new ArrayList<>();
+		for(int dot=0; dot<production.rhsCount(); dot++) {
+			if (isNullified(dot)) {
+				continue;
+			}
+			result.add(production.rhsAt(dot).symbol);
+		}
+		return result;
+	}
 }

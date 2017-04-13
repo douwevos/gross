@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import net.natpad.gross.runtime.GrossLogger;
 import net.natpad.gross.runtime.GrossLogger.Level;
@@ -294,7 +295,7 @@ public class CCStateMachine {
 	private boolean mapForward(BuildEntry buildEntry, DotLink mainDotLink) {
 		boolean result = false;
 		DotLink headLink = mainDotLink;
-
+		
 		logger.log(Level.DEBUG, "  mainDotLink=%s", mainDotLink);
 		while(headLink!=null) {
 			logger.log(Level.DEBUG, "    head-link=%s", headLink);
@@ -302,7 +303,11 @@ public class CCStateMachine {
 			Symbol symbolAtDot = headLink.dotState.getSymbolAtDot();
 			if (symbolAtDot!=null) {
 				
-				DotLink headFollowDotLink = getOrCreateDotLink(headLink.dotState.shiftNormal());
+				DotState headShiftedNormal = headLink.dotState.shiftNormal();
+				DotLink headFollowDotLink = getOrCreateDotLink(headShiftedNormal);
+				if (!testIt(headShiftedNormal)) {
+					break;
+				}
 				result |= headFollowDotLink.addReferredBy(headLink);
 				logger.log(Level.DEBUG, "    headFollowDotLink=%s", headFollowDotLink);
 				createForwardMapping(buildEntry.forwardMap, new SymbolKey(symbolAtDot, false), headFollowDotLink);
@@ -317,8 +322,11 @@ public class CCStateMachine {
 					}
 
 					if (nte.getNullable()==Boolean.TRUE) {
-						nextLink = getOrCreateDotLink(headLink.dotState.shiftNullify());
-						result |= nextLink.addReferredBy(headLink);
+						DotState shiftedNullify = headLink.dotState.shiftNullify();
+						if (testIt(shiftedNullify)) {
+							nextLink = getOrCreateDotLink(shiftedNullify);
+							result |= nextLink.addReferredBy(headLink);
+						}
 					}
 				}
 			}
@@ -328,6 +336,23 @@ public class CCStateMachine {
 	}
 
 	
+	private boolean testIt(DotState state) {
+		List<Symbol> syms = state.stripNullified();
+		if (syms.isEmpty()) {
+			return true;
+		}
+		
+		
+		for(Production p : state.production.lhs) {
+			if (state.production!=p && p.startsWith(syms)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+
+
 	private boolean recurseForward(BuildEntry buildEntry, DotLink referredLink, Production consProd, HashSet<Production> considered, String indent) {
 		logger.log(Level.DEBUG, indent+"        referredLink=%s, consProd=%s", referredLink, consProd);
 		boolean result = false;
@@ -346,7 +371,11 @@ public class CCStateMachine {
 			logger.log(Level.DEBUG, indent+"        main-link=%s", mainLink.dotState);
 			if (consProdSym!=null) {
 				
-				DotLink nextDotLink = getOrCreateDotLink(mainLink.dotState.shiftNormal());
+				DotState mainShiftedNormal = mainLink.dotState.shiftNormal();
+				if (!testIt(mainShiftedNormal)) {
+					break;
+				}
+				DotLink nextDotLink = getOrCreateDotLink(mainShiftedNormal);
 				nextDotLink.addReferredBy(mainLink);
 //				nextDotLink.referredBy.add(endLink.dotState);
 				createForwardMapping(buildEntry.forwardMap, new SymbolKey(consProdSym, false), nextDotLink);
@@ -355,7 +384,11 @@ public class CCStateMachine {
 					nextLevel.add(mainLink);
 					NonTerminalExt cnte = (NonTerminalExt) consProdSym;
 					if (cnte.getNullable()==Boolean.TRUE) {
-						DotLink next = getOrCreateDotLink(mainLink.dotState.shiftNullify());
+						DotState mainShiftedNullify = mainLink.dotState.shiftNullify();
+						if (!testIt(mainShiftedNullify)) {
+							break;
+						}
+						DotLink next = getOrCreateDotLink(mainShiftedNullify);
 						next.addReferredBy(mainLink);
 						mainLink = next;
 					} else {
@@ -501,16 +534,19 @@ public class CCStateMachine {
 		int glrCollisionCount = 0;
 		for(int stateIdx=0 ; stateIdx<stateCount(); stateIdx++) {
 			LrarState state = stateAt(stateIdx);
-			
+
+			state.describe(System.out, false, null);
+			System.out.println("--------------------------------------------------------------------");
+
 			boolean didDescribe = false;
 			Collection<TransitionsForSymbol> values = state.transitionMap.values();
 			for (TransitionsForSymbol transitionsForSymbol : values) {
 				if (transitionsForSymbol.unique.size()>1) {
-					if (!didDescribe) {
-						didDescribe = true;
-						state.describe(System.out, false, null);
-						System.out.println("--------------------------------------------------------------------");
-					}
+//					if (!didDescribe) {
+//						didDescribe = true;
+//						state.describe(System.out, false, null);
+//						System.out.println("--------------------------------------------------------------------");
+//					}
 					System.out.println("  Glr at state:"+stateIdx+" under symbol:"+transitionsForSymbol.symbol.name);
 					ArrayList<Transition> unique = transitionsForSymbol.unique;
 					for (Transition transition : unique) {
