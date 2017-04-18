@@ -100,7 +100,7 @@ public class CCStateMachine {
 			for(DotLink dotLink : dotLinks.values()) {
 				logger.log(Level.DEBUG, "  %s", dotLink);
 				
-				if (dotLink.dotState.isAtEnd()) {
+				if (dotLink.dotState.isAtPossibleEnd()) {
 					NonTerminalExt lhs = dotLink.dotState.production.lhs;
 					logger.log(Level.DEBUG, "  ꩜ Testing");
 					logger.log(Level.DEBUG, "      ⬡ %s", lhs);

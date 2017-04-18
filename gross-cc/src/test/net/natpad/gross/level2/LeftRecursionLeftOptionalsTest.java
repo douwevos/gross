@@ -46,6 +46,7 @@ public class LeftRecursionLeftOptionalsTest extends Base {
 		
 		CCStateMachine stateMachine = new CCStateMachine(logger, model);
 		stateMachine.build();
+		stateMachine.dumpGlrTransitions();
 		return stateMachine;
 	}
 

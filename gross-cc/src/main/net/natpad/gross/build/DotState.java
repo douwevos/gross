@@ -62,6 +62,25 @@ public class DotState {
 		return dotPos>=production.rhsCount();
 	}
 
+	public boolean isAtPossibleEnd() {
+		if (dotPos>=production.rhsCount()) {
+			return true;
+		}
+		for(int idx=dotPos; idx<production.rhsCount(); idx++) {
+			ProductionPart rhs = production.rhsAt(idx);
+			if (rhs.symbol instanceof Terminal) {
+				return false;
+			} else if (rhs.symbol instanceof NonTerminalExt) {
+				NonTerminalExt nt = (NonTerminalExt) rhs.symbol;
+				if (nt.getNullable()!=Boolean.TRUE) {
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	
 	public boolean isTerminated() {
 		getLocalFirstSet();
 		return isTerminated;
