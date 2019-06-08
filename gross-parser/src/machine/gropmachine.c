@@ -172,7 +172,7 @@ void grop_machine_build(GroPMachine *machine) {
 		CatIMapIterator *miter = cat_hash_map_wo_iterator(priv->dot_links);
 		gpointer key;
 		GroPDotLink *dot_link;
-		while(cat_imap_iterator_next(miter, &key, &dot_link)) {
+		while(cat_imap_iterator_next(miter, (gpointer *) &key, (gpointer *) &dot_link)) {
 			cat_log_debug("  %O", dot_link);
 
 			GroPDotState *dl_ds = grop_dot_link_get_dot_state(dot_link);
@@ -193,8 +193,8 @@ void grop_machine_build(GroPMachine *machine) {
 						if (GROP_IS_NON_TERMINAL(sad)) {
 							GroPNonTerminal *nterec = (GroPNonTerminal *) sad;
 							GroPSymbolSet *firstset = grop_non_terminal_get_first_set(nterec);
-							if (grop_symbol_set_contains(firstset, lhs_nt)) {
-								GroPDotLink *tdotlink = cat_hash_map_wo_get(priv->dot_links, shifted);
+							if (grop_symbol_set_contains(firstset, (GroPSymbol *) lhs_nt)) {
+								GroPDotLink *tdotlink = (GroPDotLink *) cat_hash_map_wo_get(priv->dot_links, shifted);
 								if (tdotlink!=NULL) {
 									cat_log_debug("          Adding reference %O", grop_dot_link_get_dot_state(tdotlink));
 									had_changes |= grop_dot_link_add_referred_by_state(dot_link, grop_dot_link_get_dot_state(tdotlink));

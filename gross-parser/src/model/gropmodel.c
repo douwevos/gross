@@ -25,7 +25,7 @@
 #include "gropproductionpartlist.h"
 
 #include <logging/catlogdefs.h>
-#define CAT_LOG_LEVEL CAT_LOG_ALL
+#define CAT_LOG_LEVEL CAT_LOG_WARN
 #define CAT_LOG_CLAZZ "GroPModel"
 #include <logging/catlog.h>
 
@@ -113,7 +113,7 @@ GroPSymbol *grop_model_get_symbol_by_name(GroPModel *model, CatStringWo *name) {
 	CatIMapIterator *iter = cat_hash_map_wo_iterator(priv->symbol_map);
 	CatInteger *key;
 	GroPSymbol *symbol = NULL;
-	while(cat_imap_iterator_next(iter, &key, &symbol)) {
+	while(cat_imap_iterator_next(iter, (gpointer *) &key, (gpointer *) &symbol)) {
 		if (cat_string_wo_equal(grop_symbol_get_name(symbol), name)) {
 			break;
 		}

@@ -29,7 +29,7 @@
 #include "../ast/groastirhsenlistable.h"
 
 #include <logging/catlogdefs.h>
-#define CAT_LOG_LEVEL CAT_LOG_ALL
+#define CAT_LOG_LEVEL CAT_LOG_WARN
 #define CAT_LOG_CLAZZ "GroPModelBuilder"
 #include <logging/catlog.h>
 
@@ -106,25 +106,27 @@ GroPModel *grop_model_builder_do_build(GroPModelBuilder *builder) {
 	while(cat_iiterator_has_next(iter)) {
 		GroRunIToken *tk_term_decl = GRORUN_ITOKEN(cat_iiterator_next(iter));
 
-		GroAstTerminalDeclaration *term_decl = GROAST_TERMINAL_DECLARATION(grorun_itoken_get_value(tk_term_decl));
 		cat_log_debug("term_decl=%O", term_decl);
+		GroAstTerminalDeclaration *term_decl = GROAST_TERMINAL_DECLARATION(grorun_itoken_get_value(tk_term_decl));
 		CatArrayWo *terms = groast_terminal_declaration_enlist(term_decl);
-		CatIIterator *t_iter = cat_array_wo_iterator(terms);
-		cat_unref_ptr(terms);
-		while(cat_iiterator_has_next(t_iter)) {
-			GroRunIToken *token = GRORUN_ITOKEN(cat_iiterator_next(t_iter));
-			cat_log_debug("token=%O", token);
-			CatStringWo *symbol_name = CAT_STRING_WO(grorun_itoken_get_value(token));
-			if (grop_model_get_symbol_by_name(result, symbol_name)!=NULL) {
-				cat_log_error("symbol_name=%O", token);
-				CatStringWo *msg = cat_string_wo_new_with("Symbol was already defined");
-				gro_imessage_handler_message(priv->msg_handler, msg, grorun_itoken_get_location(token));
-				cat_unref_ptr(msg);
-			} else {
-				grop_model_addTerminal(result, symbol_name);
+		if (terms) {
+			CatIIterator *t_iter = cat_array_wo_iterator(terms);
+			cat_unref_ptr(terms);
+			while(cat_iiterator_has_next(t_iter)) {
+				GroRunIToken *token = GRORUN_ITOKEN(cat_iiterator_next(t_iter));
+				cat_log_debug("token=%O", token);
+				CatStringWo *symbol_name = CAT_STRING_WO(grorun_itoken_get_value(token));
+				if (grop_model_get_symbol_by_name(result, symbol_name)!=NULL) {
+					cat_log_error("symbol_name=%O", token);
+					CatStringWo *msg = cat_string_wo_new_with("Symbol was already defined");
+					gro_imessage_handler_message(priv->msg_handler, msg, grorun_itoken_get_location(token));
+					cat_unref_ptr(msg);
+				} else {
+					grop_model_addTerminal(result, symbol_name);
+				}
 			}
+			cat_unref_ptr(t_iter);
 		}
-		cat_unref_ptr(t_iter);
 	}
 	cat_unref_ptr(iter);
 
@@ -228,7 +230,7 @@ static CatArrayWo *l_handler_entries(GroPModelBuilder *builder, GroPModel *model
 	while(priv->success && cat_iiterator_has_next(iter)) {
 		GObject *rhs_entry = cat_iiterator_next(iter);
 		if (GRORUN_IS_ITOKEN(rhs_entry)) {
-			rhs_entry = grorun_itoken_get_value(rhs_entry);
+			rhs_entry = grorun_itoken_get_value((GroRunIToken *) rhs_entry);
 		}
 
 		if (GROAST_IS_RHS_SUB_LIST(rhs_entry)) {

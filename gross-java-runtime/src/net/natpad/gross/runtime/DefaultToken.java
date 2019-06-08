@@ -2,7 +2,7 @@ package net.natpad.gross.runtime;
 
 public class DefaultToken implements Token {
 
-	public final Symbol symbol;
+	public Symbol symbol;
 	public final Object value;
 	
 	public DefaultToken(Symbol symbol, Object value) {
