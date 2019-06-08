@@ -85,7 +85,7 @@ static void l_handler_message(GroIMessageHandler *handler, CatStringWo *message,
 	if (location) {
 		int begin_column;
 		long long begin_row;
-		grorun_location_get_begin(location, &begin_column, &begin_row);
+		grorun_location_get_begin(location, &begin_column, (long int *) &begin_row);
 		fprintf(stderr, "at line %lld, column %d: %s\n", begin_row+1, begin_column+1, cat_string_wo_getchars(message));
 	} else {
 		fprintf(stderr, "%s\n", cat_string_wo_getchars(message));

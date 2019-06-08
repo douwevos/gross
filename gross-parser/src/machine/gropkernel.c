@@ -24,7 +24,7 @@
 #include "gropdotstate.h"
 
 #include <logging/catlogdefs.h>
-#define CAT_LOG_LEVEL CAT_LOG_ALL
+#define CAT_LOG_LEVEL CAT_LOG_WARN
 #define CAT_LOG_CLAZZ "GroPKernel"
 #include <logging/catlog.h>
 
@@ -156,7 +156,7 @@ gboolean grop_kernel_equal(const GroPKernel *kernel_a, const GroPKernel *kernel_
 	gboolean result = TRUE;
 	CatIMapIterator *amiter = cat_hash_map_wo_iterator(priv_a->main);
 	GroPDotState *key_a = NULL;
-	while(cat_imap_iterator_next(amiter, &key_a, NULL)) {
+	while(cat_imap_iterator_next(amiter, (gpointer *) &key_a, NULL)) {
 		if (cat_hash_map_wo_get(priv_b->main, key_a)==NULL) {
 			result = FALSE;
 			break;
