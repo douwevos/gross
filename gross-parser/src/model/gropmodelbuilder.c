@@ -106,7 +106,7 @@ GroPModel *grop_model_builder_do_build(GroPModelBuilder *builder) {
 	while(cat_iiterator_has_next(iter)) {
 		GroRunIToken *tk_term_decl = GRORUN_ITOKEN(cat_iiterator_next(iter));
 
-		cat_log_debug("term_decl=%O", term_decl);
+		cat_log_debug("term_decl=%O", tk_term_decl);
 		GroAstTerminalDeclaration *term_decl = GROAST_TERMINAL_DECLARATION(grorun_itoken_get_value(tk_term_decl));
 		CatArrayWo *terms = groast_terminal_declaration_enlist(term_decl);
 		if (terms) {
